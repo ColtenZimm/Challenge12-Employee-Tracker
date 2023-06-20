@@ -409,3 +409,76 @@ function AddEmployee() {
     });
   }
   
+  function UpdateEmployeeManager() {
+    // show all ee's as a list
+    const query = `SELECT first_name, last_name FROM employee;`;
+    connection.query(query, (err, data) => {
+    // map all ee's to an array
+    const employees = data.map(
+      (item) => `${item.first_name} ${item.last_name}`
+    );
+    // prompt user to select an ee to update
+    inquirer
+      .prompt([
+        {
+          name: "employee",
+          type: "list",
+          message: "Which employee would you like to update?",
+          choices: employees,
+        },
+      ])
+      .then((answer) => {
+        // console.log("line 400+ &&&", answer); // returns the selected employee
+        // get the selected employee's first and last name
+        const selectedEmployee = answer.employee.split(" ");
+        const firstName = selectedEmployee[0];
+        const lastName = selectedEmployee[1];
+   
+        // query all managers 
+        const query = `SELECT 
+        first_name, last_name 
+        FROM employee 
+        WHERE manager_id IS NULL 
+        AND first_name != '${firstName}' 
+        AND last_name != '${lastName}';`;
+        connection.query(query, (err, data) => {
+          //console.log("line 400+ ***", data); 
+          // map all managers to an array
+          const managers = data.map(
+            (item) => `${item.first_name} ${item.last_name}`
+          );
+          // prompt the user to select a new manager
+          inquirer
+            .prompt({
+              name: "manager",
+              type: "list",
+              message: "Who is the employee's new manager?",
+              choices: managers,
+            })
+            .then((answer) => {
+              // get the selected manager's id
+              const query = `SELECT id FROM employee WHERE first_name = ? AND last_name = ?`;
+              connection.query(query, [answer.manager.split(" ")[0], answer.manager.split(" ")[1]], (err, data) => {
+                if (err) throw err;
+                const managerId = data[0].id;
+                // update the employee's manager in the database
+                const query = `UPDATE employee SET manager_id = ? WHERE first_name = ? AND last_name = ?`;
+                connection.query(
+                  query,
+                  [managerId, firstName, lastName],
+                  (err, data) => {
+                    if (err) throw err;
+                    console.log(
+                      `Successfully updated ${firstName} ${lastName}'s manager to ${answer.manager}.`
+                    );
+                    ViewAllEmployees();
+                  }
+                );
+              });
+            });
+        }
+      );
+    });
+  });
+  }
+  
