@@ -233,3 +233,38 @@ function AddEmployee() {
           },
         ]);
       })
+      .then((answer) => {
+        // console.log("answer1", answer); //returns { first_name: 'a', last_name: 'b', role: 'Salesperson' }
+        userInput1 = answer;
+        // display manager id, first name, last name as managers
+        const query2 = `SELECT 
+        manager.id as manager_id,
+        CONCAT(manager.first_name, ' ', manager.last_name) AS manager_name
+        FROM employee
+        LEFT JOIN role ON employee.role_id = role.id
+        LEFT JOIN employee AS manager ON manager.id = employee.manager_id 
+        WHERE manager.id IS NOT NULL
+        GROUP BY manager_id;`;
+        return new Promise((resolve, reject) => {
+          connection.query(query2, (err, data) => {
+            if (err) reject(err);
+            else resolve(data);
+          });
+        });
+      })
+      .then((managersData) => {
+        //console.log("line 256 @@@", managersData);
+        // make a new array to store all manager names
+        const managers = managersData.map(
+          (item) => `${item.manager_name} ID:${item.manager_id}`
+        );
+  
+        return inquirer.prompt([
+          {
+            name: "manager",
+            type: "list",
+            message: "Which manager is the employee under?",
+            choices: [...managers, "None"],
+          },
+        ]);
+      })
