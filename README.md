@@ -5,12 +5,12 @@ User can use this terminal application to view and manage the departments, roles
 
 ## 🚀 Description
 
-With this applicaion, user can:
+With this application, user can:
 - view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
 -  showing department names and department ids
 - view all roles' job title, role id, the department that role belongs to, and the salary for that role
 - view a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-- view department infomation
+- view department information
 - add a role, an employee or a department
 - remove a role, an employee or a department
 - view the total utilized budget of a department—in other words, the combined salaries of all employees in that department
@@ -25,7 +25,7 @@ With this applicaion, user can:
 
 **Runtime:** Node.js
 
-**Lanuage:** Javascript
+**Language:** Javascript
 
 **Dependencies:** 
 
@@ -38,12 +38,12 @@ With this applicaion, user can:
 ## 💾 Installation
 
 
-With the package.json file, use jest to excute the tests in the terminal by the following command:
+With the package.json file, use jest to execute the tests in the terminal by the following command:
 ```
 npm i
 ```
 
-Or install all the following dependencices:
+Or install all the following dependencies:
 ```
 npm instal console.table
 
@@ -62,7 +62,7 @@ For npm scripts:
 ```
 ## Usage
 
-To excute MySQL shell in the terminal by the following command:
+To execute MySQL shell in the terminal by the following command:
 ```
 mysql -u root
 ```
