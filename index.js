@@ -545,3 +545,57 @@ function AddEmployee() {
         });
     });
   }
+  function RemoveRole() {
+    // prompt user to select role to remove
+    // remove role: title, salary, department
+    connection.query("SELECT role.title FROM role", (err, data) => {
+      // console.log(data)
+      const roles = data.map((item) => `${item.title}`);
+      // console.log(roles);
+  
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "title",
+            message: "Select a role you want to remove?",
+            choices: [...roles],
+          },
+        ])
+        .then((data) => {
+          // console.log(data.title);
+          const { title } = data;
+  
+          // Check if role exists. If not, display a message. If yes, delete the role.
+          connection.query(
+            "SELECT * FROM role WHERE title = '" + title + "'",
+            (err, res) => {
+              if (err) throw err;
+              if (res.length === 0) {
+                console.log(`Role with title ${data.title} does not exist.`);
+              }
+  
+              if (res.length !== 0) {
+                connection.query(
+                  "DELETE FROM role WHERE title = '" + title + "'",
+                  (err, res) => {
+                    if (err) throw err;
+                    if (res.affectedRows === 0) {
+                      console.log(
+                        `Role with title ${data.title} does not exist.`
+                      );
+                    } else {
+                      console.table({
+                        message: `\n-------------------\n Role with title ${data.title} has been removed.\n`,
+                        affectedRows: res.affectedRows,
+                      });
+                      ViewAllRoles();
+                    }
+                  }
+                );
+              }
+            }
+          );
+        });
+    });
+  }
