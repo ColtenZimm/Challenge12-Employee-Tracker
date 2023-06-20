@@ -345,3 +345,67 @@ function AddEmployee() {
         });
     });
   }
+
+  function UpdateEmployeeRole() {
+    // show all ee's as a list
+    const query = `SELECT first_name, last_name FROM employee;`;
+    connection.query(query, (err, data) => {
+      // map all ee's to an array
+      const employees = data.map(
+        (item) => `${item.first_name} ${item.last_name}`
+      );
+      // prompt user to select an ee to update
+      inquirer
+        .prompt([
+          {
+            name: "employee",
+            type: "list",
+            message: "Which employee would you like to update?",
+            choices: employees,
+          },
+        ])
+        .then((answer) => {
+          // get the selected employee's first and last name
+          const selectedEmployee = answer.employee.split(" ");
+          const firstName = selectedEmployee[0];
+          const lastName = selectedEmployee[1];
+  
+          // query the role table to get all available roles
+          const query = `SELECT title FROM role;`;
+          connection.query(query, (err, data) => {
+            // map all roles to an array
+            const roles = data.map((item) => item.title);
+            // prompt the user to select a new role
+            inquirer
+              .prompt({
+                name: "role",
+                type: "list",
+                message: "What is the employee's new role?",
+                choices: roles,
+              })
+              .then((answer) => {
+                // get the selected role's id
+                const query = `SELECT id FROM role WHERE title = ?`;
+                connection.query(query, [answer.role], (err, data) => {
+                  if (err) throw err;
+                  const roleId = data[0].id;
+                  // update the employee's role in the database
+                  const query = `UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?`;
+                  connection.query(
+                    query,
+                    [roleId, firstName, lastName],
+                    (err, data) => {
+                      if (err) throw err;
+                      console.log(
+                        `Successfully updated ${firstName} ${lastName}'s role to ${answer.role}.`
+                      );
+                      ViewAllEmployees();
+                    }
+                  );
+                });
+              });
+          });
+        });
+    });
+  }
+  
