@@ -294,4 +294,54 @@ function AddEmployee() {
         );
       });
   }
-  
+  function RemoveEmployee() {
+    // remove ee: first name, last name, role, manager
+    // --- ee array needed, for user to remove from
+    // --- new prompt to give hint for user's input needed
+    const query = `SELECT 
+    employee.id, 
+    employee.first_name, 
+    employee.last_name, 
+    role.title, 
+    department.name AS 
+    department, 
+    role.salary, 
+    CONCAT(manager.first_name, ' ', manager.last_name) AS 
+    manager FROM 
+    employee LEFT JOIN role ON 
+    employee.role_id = role.id 
+    LEFT JOIN department ON 
+    role.department_id = department.id LEFT JOIN 
+    employee manager ON 
+    manager.id = employee.manager_id;`;
+    connection.query(query, (err, data) => {
+      if (err) throw err;
+      const employees = data.map(
+        (item) => `${item.first_name} ${item.last_name}`
+      );
+      inquirer
+        .prompt({
+          name: "employee",
+          type: "list",
+          message: "Which employee would you like to remove?",
+          choices: [...employees],
+        })
+        .then((answer) => {
+          // console.log("line 337 answer", answer.employee.split(' ')[0]);
+          // delete ee from db based on user input
+          const query = `DELETE FROM employee WHERE first_name = ? AND last_name = ?`;
+          connection.query(
+            query,
+            [answer.employee.split(" ")[0], answer.employee.split(" ")[1]],
+            (err, data) => {
+              // console.log("line 340", data);
+              if (err) throw err;
+              console.log(
+                `You have removed ${answer.employee} from the database.`
+              );
+              ViewAllEmployees();
+            }
+          );
+        });
+    });
+  }
