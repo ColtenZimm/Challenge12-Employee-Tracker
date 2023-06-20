@@ -268,3 +268,30 @@ function AddEmployee() {
           },
         ]);
       })
+      .then((answer) => {
+        //console.log("line 274 answer2", userInput1,answer);
+        // add ee to db based on user input
+        const query = `INSERT INTO employee 
+        (first_name, last_name, role_id, manager_id) 
+        VALUES (?, ?, ?, ?)`;
+        // console.log("answer3", answer); // returns manager's role by user input
+        connection.query(
+          query,
+          [
+            userInput1.first_name,
+            userInput1.last_name,
+            userInput1.role.split("ID: ")[1],
+            answer.manager.split("ID:")[1],
+          ],
+          //console.log("###",[userInput1.first_name, userInput1.role.split('ID: ')[1], answer.manager.split('ID:')[1]]),
+          (err, data) => {
+            if (err) throw err;
+            console.log(
+              `Added ${userInput1.first_name} ${userInput1.last_name} to the database`
+            );
+            ViewAllEmployees();
+          }
+        );
+      });
+  }
+  
