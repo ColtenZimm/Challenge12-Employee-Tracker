@@ -122,3 +122,34 @@ const mainMenu = () => {
     });
   }
   
+  function ViewAllEmployeesByDepartment() {
+    // department: marketing, accounting, engineering, human resources, legal
+    // -- another inquire prompt needed for department selection display
+    inquirer
+      .prompt({
+        name: "department",
+        type: "list",
+        message: "Which department would you like to view?",
+        choices: [
+          "Marketing",
+          "Accounting",
+          "Engineering",
+          "Human Resources",
+          "Legal",
+        ],
+      })
+      .then((answer) => {
+        // console.log(answer);
+        switch (answer.department) {
+          case "Marketing":
+            return myViewEmployeesByDepartment("Marketing");
+          case "Accounting":
+            return myViewEmployeesByDepartment("Accounting");
+          case "Engineering":
+            return myViewEmployeesByDepartment("Engineering");
+          case "Human Resources":
+            return myViewEmployeesByDepartment("Human Resources");
+          case "Legal":
+            return myViewEmployeesByDepartment("Legal");
+        }
+      });
