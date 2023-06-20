@@ -192,4 +192,44 @@ const mainMenu = () => {
           mainMenu();
         });
       }
-      
+      // first name, last name, role, and manager
+function AddEmployee() {
+    let userInput1;
+    // display a list as choice includes all roles
+    const query = `SELECT id, title FROM role WHERE title NOT LIKE '%Manager%';`;
+  
+    Promise.resolve()
+      .then(() => {
+        return new Promise((resolve, reject) => {
+          connection.query(query, (err, data) => {
+            if (err) reject(err);
+            else resolve(data);
+          });
+        });
+      })
+      .then((rolesData) => {
+        // make a new array to store all role titles
+        //console.log("line 213 rolesData", rolesData);
+        const roles = rolesData.map(
+          (item) => `Role title: ${item.title}, Role ID: ${item.id}`
+        );
+  
+        return inquirer.prompt([
+          {
+            name: "first_name",
+            type: "input",
+            message: "What is the employee's first name?",
+          },
+          {
+            name: "last_name",
+            type: "input",
+            message: "What is the employee's last name?",
+          },
+          {
+            name: "role",
+            type: "list",
+            message: "What is the employee's role id?",
+            choices: roles,
+          },
+        ]);
+      })
