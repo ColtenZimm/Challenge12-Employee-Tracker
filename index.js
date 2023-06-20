@@ -599,3 +599,117 @@ function AddEmployee() {
         });
     });
   }
+  function ViewAllDepartments() {
+    // all departments: id, name
+    const query = `SELECT 
+    department.id, 
+    department.name FROM 
+    department;`;
+    connection.query(query, (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      mainMenu();
+    });
+  }
+  
+  // ========= add department ==========
+  function AddDepartment() {
+    // add department: name
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "name",
+          message: "What is the name of the department?",
+        },
+      ])
+      .then((data) => {
+        const { name } = data;
+        connection.query(
+          `INSERT INTO department (name) VALUES (?)`,
+          [name],
+          (err, res) => {
+            if (err) throw err;
+            console.log(
+              `\n-------------------\n Department ${name} has been added!\n`
+            );
+            ViewAllDepartments();
+          }
+        );
+      });
+  }
+  
+  // ========= remove department ==========
+  function RemoveDepartment() {
+    // remove department: name
+    // prompt user to select department to remove
+    connection.query("SELECT department.name FROM department", (err, data) => {
+      // make a new array to store all department names
+      const departments = data.map((item) => `${item.name}`);
+      // --- new prompt to give hint for user's input needed
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "name",
+            message: "Select a department you want to remove?",
+            choices: [...departments],
+          },
+        ])
+        .then((data) => {
+          const { name } = data;
+  
+          // Check if department exists. If not, display a message. If yes, delete the department.
+          connection.query(
+            "SELECT * FROM department WHERE name = '" + name + "'",
+            (err, res) => {
+              if (err) throw err;
+              if (res.length === 0) {
+                console.log(`Department with name ${data.name} does not exist.`);
+              }
+  
+              if (res.length !== 0) {
+                connection.query(
+                  "DELETE FROM department WHERE name = '" + name + "'",
+                  (err, res) => {
+                    if (err) throw err;
+                    if (res.affectedRows === 0) {
+                      console.log(
+                        `Department with name ${data.name} does not exist.`
+                      );
+                    } else {
+                      console.table({
+                        message: `\n-------------------\n Department with name ${data.name} has been removed.\n`,
+                        affectedRows: res.affectedRows,
+                      });
+                      ViewAllDepartments();
+                    }
+                  }
+                );
+              }
+            }
+          );
+        });
+    });
+  }
+  function ViewTotalUtilizedBudgetByDepartment() {
+    // total budget: department, sum of salaries
+    const query = `SELECT department.name AS department, 
+     SUM(role.salary) AS utilized_budget FROM employee 
+     LEFT JOIN role ON employee.role_id = role.id 
+     LEFT JOIN department ON role.department_id = department.id 
+     GROUP BY department.name;`;
+    connection.query(query, (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      mainMenu();
+    });
+  }
+  
+  // ===== Exit the application =====
+  function Exit() {
+    console.log("Goodbye!");
+    connection.end();
+  }
+  
+  mainMenu();
