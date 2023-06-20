@@ -15,3 +15,14 @@ VALUES  ('Marketing Manager', 100000, 1),
         ('HR Manager', 110000, 4),
         ('Recruiter', 50000, 4),
         ('Corporate Lawyer', 130000, 5);
+
+        INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES  ('Winston', 'Morris', 1, NULL),
+        ('Amanda', 'Hernandez', 2, 1),
+        ('Gemma', 'Huerta', 3, NULL),
+        ('Darius', 'Reese', 4, 3),
+        ('John', 'Smith', 5, NULL),
+        ('Alexander', 'Byrd', 6, 5),
+        ('Elliott', 'Clements', 7, NULL),
+        ('Jane', 'Wick', 8, 7),
+        ('David', 'Wayne', 9, NULL);
