@@ -481,4 +481,21 @@ function AddEmployee() {
     });
   });
   }
+  function ViewAllRoles() {
+    // all roles: id, title, salary, department
+    // display all roles in terminal with console.table
+    const query = `SELECT 
+     role.id, 
+     role.title, 
+     role.salary, 
+     department.name AS department 
+     FROM role 
+     LEFT JOIN department ON 
+     role.department_id = department.id;`;
+    connection.query(query, (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      mainMenu();
+    });
+  }
   
