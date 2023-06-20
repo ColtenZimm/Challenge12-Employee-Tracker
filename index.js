@@ -498,4 +498,50 @@ function AddEmployee() {
       mainMenu();
     });
   }
-  
+  function AddRole() {
+    // add role: title, salary, department
+    const query = `SELECT department.name FROM department`;
+    connection.query(query, (err, data) => {
+      if (err) throw err;
+      // make a new array to store all department names
+      const departments = data.map((item) => `${item.name}`);
+      // --- new prompt to give hint for user's input needed
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "title",
+            message: "What is the title of the role?",
+          },
+          {
+            type: "input",
+            name: "salary",
+            message: "What is the salary of the role?",
+          },
+          {
+            // display all department name as choices
+            type: "list",
+            name: "department_name",
+            message: "What is the department of the role?",
+            choices: [...departments],
+          },
+        ])
+        .then((data) => {
+          const { title, salary, department_name } = data;
+          connection.query(
+            `INSERT INTO role (title, salary, department_id)
+               SELECT ?, ?, department.id
+               FROM department
+               WHERE department.name = ?`,
+            [title, salary, department_name],
+            (err, res) => {
+              if (err) throw err;
+              console.log(
+                `\n-------------------\n Role ${title} has been added!\n`
+              );
+              ViewAllRoles();
+            }
+          );
+        });
+    });
+  }
