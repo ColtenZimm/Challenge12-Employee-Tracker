@@ -153,3 +153,22 @@ const mainMenu = () => {
             return myViewEmployeesByDepartment("Legal");
         }
       });
+      function myViewEmployeesByDepartment(department) {
+        const query = `
+         SELECT employee.id, 
+         employee.first_name, 
+         employee.last_name, 
+         role.title, 
+         department.name AS department 
+         FROM employee 
+         LEFT JOIN role ON employee.role_id = role.id 
+         LEFT JOIN department ON role.department_id = department.id 
+         WHERE department.name = ?;`;
+        connection.query(query, department, (err, data) => {
+          if (err) throw err;
+          console.table(data);
+          mainMenu();
+        });
+      }
+    }
+    
